@@ -1,0 +1,39 @@
+---
+import Base from './Base.astro';
+import TopNav from '../components/TopNav.astro';
+import Sidebar from '../components/Sidebar.astro';
+import MobileNav from '../components/MobileNav.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  // Navigation Data
+  navData: {
+    sections: any[];
+    // Backwards compatibility
+    categoryTree?: any;
+    sortedCategories?: string[];
+  }
+}
+
+const { title, description, image, navData } = Astro.props;
+---
+
+<Base title={title} description={description} image={image}>
+  <!-- Top Navigation -->
+  <TopNav />
+
+  <!-- Mobile Navigation -->
+  <MobileNav sections={navData.sections} />
+
+  <!-- Desktop Sidebar -->
+  <div class="hidden md:block">
+    <Sidebar sections={navData.sections} />
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="md:ml-72 min-h-screen pt-16">
+    <slot />
+  </main>
+</Base>

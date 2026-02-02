@@ -1,0 +1,36 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  date?: string | Date;
+}
+
+const { title, subtitle, date } = Astro.props;
+
+const formatDate = (d: string | Date) => {
+  const dateObj = typeof d === 'string' ? new Date(d) : d;
+  return dateObj.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+---
+
+<header class="mb-12 border-b border-gray-200 dark:border-gray-800 pb-8">
+  <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-200 mb-4 leading-tight tracking-tight">
+    {title}
+  </h1>
+
+  {subtitle && (
+    <p class="text-xl text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+      {subtitle}
+    </p>
+  )}
+
+  {date && (
+    <time class="text-sm text-gray-500 dark:text-gray-500 font-medium">
+      {formatDate(date)}
+    </time>
+  )}
+</header>

@@ -1,0 +1,217 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import SearchResults from './SearchResults.astro';
+---
+
+<nav class="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
+  <div class="h-full px-6 flex items-center justify-between">
+    <!-- Left: Site Branding -->
+    <div class="flex items-center gap-2">
+      <a href="/" class="flex items-center gap-2 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+        <img
+          src="/favicon/apple-touch-icon.png"
+          alt="Site icon"
+          class="w-8 h-8 rounded"
+        />
+        <span class="font-semibold text-base hidden sm:inline">Bhavani's Digital Garden</span>
+      </a>
+    </div>
+
+    <!-- Right: Quick Links and Search -->
+    <div class="flex items-center gap-4">
+      <a
+        href="https://thelearning.dev"
+        target="_blank"
+        rel="noopener"
+        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors hidden lg:inline"
+      >
+        Join TheLearningDev
+      </a>
+
+      <a
+        href="/rss.xml"
+        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors hidden md:inline"
+      >
+        RSS Feed
+      </a>
+
+      <!-- Search Bar -->
+      <div class="relative hidden md:block">
+        <input
+          type="search"
+          placeholder="Ask or search..."
+          class="w-64 px-4 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          id="search-input"
+          autocomplete="off"
+        />
+        <svg
+          class="absolute right-3 top-2 w-4 h-4 text-gray-400 pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <SearchResults />
+      </div>
+
+      <!-- Theme Toggle -->
+      <ThemeToggle />
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        class="md:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 rounded-lg transition-colors"
+        aria-label="Toggle menu"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+
+  if (mobileMenuToggle && mobileNav) {
+    mobileMenuToggle.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden');
+    });
+  }
+
+  // Search functionality
+  interface SearchItem {
+    title: string;
+    description: string;
+    tags: string[];
+    url: string;
+    type: string;
+    category: string;
+  }
+
+  let searchIndex: SearchItem[] = [];
+  let searchIndexLoaded = false;
+
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const searchResults = document.getElementById('search-results');
+  const searchResultsContent = document.getElementById('search-results-content');
+
+  // Load search index
+  async function loadSearchIndex() {
+    if (searchIndexLoaded) return;
+    try {
+      const response = await fetch('/search-index.json');
+      searchIndex = await response.json();
+      searchIndexLoaded = true;
+    } catch (error) {
+      console.error('Failed to load search index:', error);
+    }
+  }
+
+  // Perform search
+  function performSearch(query: string): SearchItem[] {
+    if (!query.trim() || !searchIndexLoaded) return [];
+
+    const lowerQuery = query.toLowerCase();
+    const results = searchIndex.filter(item => {
+      return (
+        item.title.toLowerCase().includes(lowerQuery) ||
+        item.description.toLowerCase().includes(lowerQuery) ||
+        item.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
+        item.category.toLowerCase().includes(lowerQuery)
+      );
+    });
+
+    return results.slice(0, 10); // Limit to 10 results
+  }
+
+  // Display search results
+  function displayResults(results: SearchItem[]) {
+    if (!searchResultsContent || !searchResults) return;
+
+    if (results.length === 0) {
+      searchResultsContent.innerHTML = '<div class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">No results found</div>';
+      searchResults.classList.remove('hidden');
+      return;
+    }
+
+    const typeColors: Record<string, string> = {
+      blog: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      talk: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+      service: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      project: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+    };
+
+    const html = results.map(item => `
+      <a href="${item.url}" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
+        <div class="flex items-start gap-2">
+          <span class="inline-block px-2 py-0.5 text-xs rounded ${typeColors[item.type] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}">${item.type}</span>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">${item.title}</div>
+            ${item.description ? `<div class="text-xs text-gray-600 dark:text-gray-400 truncate">${item.description}</div>` : ''}
+          </div>
+        </div>
+      </a>
+    `).join('');
+
+    searchResultsContent.innerHTML = html;
+    searchResults.classList.remove('hidden');
+  }
+
+  // Hide results
+  function hideResults() {
+    if (searchResults) {
+      searchResults.classList.add('hidden');
+    }
+  }
+
+  if (searchInput) {
+    // Load index on focus
+    searchInput.addEventListener('focus', () => {
+      loadSearchIndex();
+    });
+
+    // Search on input
+    searchInput.addEventListener('input', (e) => {
+      const query = (e.target as HTMLInputElement).value;
+      if (!query.trim()) {
+        hideResults();
+        return;
+      }
+      const results = performSearch(query);
+      displayResults(results);
+    });
+
+    // Hide results when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
+        hideResults();
+      }
+    });
+  }
+
+  // Re-initialize on page navigation (Astro view transitions)
+  document.addEventListener('astro:after-swap', () => {
+    const newSearchInput = document.getElementById('search-input') as HTMLInputElement;
+    const newSearchResults = document.getElementById('search-results');
+
+    if (newSearchInput) {
+      // Reattach event listeners
+      newSearchInput.addEventListener('focus', loadSearchIndex);
+      newSearchInput.addEventListener('input', (e) => {
+        const query = (e.target as HTMLInputElement).value;
+        if (!query.trim()) {
+          hideResults();
+          return;
+        }
+        const results = performSearch(query);
+        displayResults(results);
+      });
+    }
+  });
+</script>

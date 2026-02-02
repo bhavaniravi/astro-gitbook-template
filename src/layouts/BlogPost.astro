@@ -1,0 +1,45 @@
+---
+import MainLayout from './MainLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CodeCopyButton from '../components/CodeCopyButton.astro';
+import PrevNextNav from '../components/PrevNextNav.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface PostLink {
+  title: string;
+  href: string;
+}
+
+interface Props {
+  post: CollectionEntry<'notes'>;
+  navData: any;
+  prev?: PostLink;
+  next?: PostLink;
+}
+
+const { post, navData, prev, next } = Astro.props;
+const { title, pubDate, description, sub_title, featuredImgPath } = post.data;
+
+// Extract category from post ID
+const category = post.id.split('/')[0];
+
+// Use sub_title as fallback description
+const metaDescription = description || sub_title || `Read ${title} on Bhavani Ravi's blog`;
+---
+
+<MainLayout title={title} description={metaDescription} image={featuredImgPath || undefined} navData={navData}>
+  <article class="max-w-4xl mx-auto px-6 lg:px-8 py-8 lg:py-12">
+    <Breadcrumbs category={category} title={title} />
+
+    <PageHeader title={title} subtitle={sub_title || undefined} date={pubDate} />
+
+    <div class="prose prose-lg dark:prose-dark max-w-none">
+      <slot />
+    </div>
+  </article>
+
+  <PrevNextNav prev={prev} next={next} />
+
+  <CodeCopyButton />
+</MainLayout>

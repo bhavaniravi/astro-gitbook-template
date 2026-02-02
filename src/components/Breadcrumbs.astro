@@ -1,0 +1,64 @@
+---
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items?: BreadcrumbItem[];
+  category?: string;
+  title?: string;
+}
+
+const { items, category, title } = Astro.props;
+
+const formatCategory = (cat: string) => {
+  return cat.split('-').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+};
+
+// Construct breadcrumbs from legacy or new props
+const breadcrumbs: BreadcrumbItem[] = items || [];
+
+if (!items) {
+  breadcrumbs.push({ label: 'Home', href: '/' });
+  if (category) {
+    breadcrumbs.push({
+      label: formatCategory(category),
+      href: `/blog#${category}`
+    });
+  }
+  if (title) {
+    breadcrumbs.push({ label: title });
+  }
+}
+---
+
+{breadcrumbs.length > 0 && (
+  <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-8" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+      {breadcrumbs.map((item, index) => (
+        <li class="flex items-center space-x-2">
+          {index > 0 && (
+            <svg class="w-4 h-4 text-gray-400 dark:text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          )}
+          {item.href ? (
+            <a
+              href={item.href}
+              class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors whitespace-nowrap"
+            >
+              {item.label}
+            </a>
+          ) : (
+            <span class="text-gray-900 dark:text-gray-100 font-medium truncate max-w-[200px] md:max-w-none">
+              {item.label}
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

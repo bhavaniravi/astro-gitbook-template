@@ -1,0 +1,123 @@
+---
+interface Props {
+  title: string;
+  href?: string;
+  items?: any[];
+  level?: number;
+}
+
+const { title, href, items, level = 0 } = Astro.props;
+const hasChildren = items && items.length > 0;
+
+const normalize = (path: string) => path?.replace(/\/$/, "") || "";
+const currentPath = normalize(Astro.url.pathname);
+
+const isItemActive = (item: any): boolean => {
+  if (item.href && normalize(item.href) === currentPath) return true;
+  if (item.items && item.items.length > 0) {
+    return item.items.some(isItemActive);
+  }
+  return false;
+};
+
+// Expand if any child tree contains the active link
+const isExpanded = hasChildren && items.some(isItemActive);
+
+// Check if this specific item is active
+const isActive = href && normalize(href) === currentPath;
+---
+
+<div class="nav-item-wrapper" data-nav-level={level}>
+  {hasChildren ? (
+    <div class="nav-collapsible">
+      <button
+        type="button"
+        class:list={[
+          "nav-toggle w-full flex items-center justify-between px-2 py-1.5 text-sm font-medium rounded-md transition-colors",
+          isActive
+            ? "bg-blue-100 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100"
+            : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+        ]}
+        aria-expanded={isExpanded ? "true" : "false"}
+      >
+        <span class="truncate">
+          {href ? (
+            <a href={href} class={isActive ? "" : "hover:underline"} onclick="event.stopPropagation()">
+              {title}
+            </a>
+          ) : (
+            title
+          )}
+        </span>
+        <svg
+          class="chevron w-4 h-4 transition-transform"
+          class:list={[isExpanded ? 'rotate-90' : '']}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+      <div class="nav-content pl-3 space-y-0.5" class:list={[isExpanded ? '' : 'hidden']}>
+        {items.map(item => (
+          <Astro.self {...item} level={level + 1} />
+        ))}
+      </div>
+    </div>
+  ) : (
+    <a
+      href={href}
+      target={href?.startsWith('http') ? '_blank' : undefined}
+      rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+      class:list={[
+        "text-sm block px-2 py-1.5 rounded-md transition-colors truncate flex items-center justify-between",
+        isActive
+          ? "bg-blue-100 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100 font-medium"
+          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+      ]}
+      title={title}
+      data-active-link={isActive}
+    >
+      <span>{title}</span>
+      {href?.startsWith('http') && (
+        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      )}
+    </a>
+  )}
+</div>
+
+<script>
+  function initNav() {
+    document.querySelectorAll('.nav-toggle').forEach(button => {
+      // Avoid multiple listeners
+      if (button.getAttribute('data-nav-listener')) return;
+      button.setAttribute('data-nav-listener', 'true');
+
+      button.addEventListener('click', (e) => {
+        const toggle = e.currentTarget as HTMLButtonElement;
+        const content = toggle.nextElementSibling as HTMLElement;
+        const chevron = toggle.querySelector('.chevron');
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+        if (content && chevron) {
+          if (isExpanded) {
+            content.classList.add('hidden');
+            chevron.classList.remove('rotate-90');
+            toggle.setAttribute('aria-expanded', 'false');
+          } else {
+            content.classList.remove('hidden');
+            chevron.classList.add('rotate-90');
+            toggle.setAttribute('aria-expanded', 'true');
+          }
+        }
+      });
+    });
+  }
+
+  // Initialize on load and after swaps
+  initNav();
+  document.addEventListener('astro:after-swap', initNav);
+</script>

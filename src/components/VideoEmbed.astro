@@ -1,0 +1,30 @@
+---
+interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+
+// Helper to convert YouTube watch URL to embed URL
+const getEmbedUrl = (watchUrl: string) => {
+  return watchUrl
+    .replace('watch?v=', 'embed/')
+    .replace('youtu.be/', 'youtube.com/embed/')
+    .split('&')[0]; // Remove extra params like t=...
+};
+
+const embedUrl = getEmbedUrl(url);
+---
+
+<div class="mb-12">
+  <div class="aspect-video rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg">
+    <iframe
+      src={embedUrl}
+      title={title}
+      class="w-full h-full"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </div>
+</div>

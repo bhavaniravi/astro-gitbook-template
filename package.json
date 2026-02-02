@@ -1,0 +1,51 @@
+{
+    "name": "@til/template",
+    "version": "1.0.0",
+    "description": "A reusable Astro component library for building gitbook-style documentation sites",
+    "type": "module",
+    "main": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts",
+        "./tailwind.config": "./tailwind.config.mjs",
+        "./styles": "./src/styles/global.css"
+    },
+    "files": [
+        "src",
+        "tailwind.config.mjs",
+        "README.md",
+        "LICENSE"
+    ],
+    "keywords": [
+        "astro",
+        "astro-component",
+        "documentation",
+        "gitbook",
+        "blog",
+        "template",
+        "design-system"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bhavaniravi/astro-gitbook-template.git"
+    },
+    "homepage": "https://github.com/bhavaniravi/astro-gitbook-template#readme",
+    "bugs": {
+        "url": "https://github.com/bhavaniravi/astro-gitbook-template/issues"
+    },
+    "license": "MIT",
+    "author": "Bhavani Ravi",
+    "dependencies": {
+        "astro": "^5.1.3",
+        "tailwindcss": "^3.4.17",
+        "@tailwindcss/typography": "^0.5.19",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^2.6.0"
+    },
+    "peerDependencies": {
+        "astro": "^5.0.0",
+        "tailwindcss": "^3.4.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.3"
+    }
+}

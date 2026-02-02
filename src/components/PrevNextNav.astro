@@ -1,0 +1,59 @@
+---
+interface PostLink {
+  title: string;
+  href: string;
+}
+
+interface Props {
+  prev?: PostLink;
+  next?: PostLink;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="border-t border-gray-200 dark:border-gray-700 mt-12 pt-8">
+    <div class="max-w-4xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Previous Post */}
+        <div class="flex flex-col">
+          {prev ? (
+            <a
+              href={prev.href}
+              class="group flex flex-col h-full p-6 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-pblue-500 dark:hover:border-pblue-400 transition-colors"
+            >
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                ← Previous
+              </span>
+              <span class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-pblue-600 dark:group-hover:text-pblue-400 transition-colors">
+                {prev.title}
+              </span>
+            </a>
+          ) : (
+            <div class="invisible"></div>
+          )}
+        </div>
+
+        {/* Next Post */}
+        <div class="flex flex-col">
+          {next ? (
+            <a
+              href={next.href}
+              class="group flex flex-col h-full p-6 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-pblue-500 dark:hover:border-pblue-400 transition-colors text-right"
+            >
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                Next →
+              </span>
+              <span class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-pblue-600 dark:group-hover:text-pblue-400 transition-colors">
+                {next.title}
+              </span>
+            </a>
+          ) : (
+            <div class="invisible"></div>
+          )}
+        </div>
+      </div>
+    </div>
+  </nav>
+)}

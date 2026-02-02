@@ -1,0 +1,19 @@
+---
+interface Props {
+  variant?: 'blue' | 'gray' | 'red' | 'green';
+  class?: string;
+}
+
+const { variant = 'gray', class: className } = Astro.props;
+
+const variants = {
+  blue: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
+  gray: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+  red: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+  green: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
+};
+---
+
+<span class={`px-3 py-1 text-sm rounded-full shrink-0 ${variants[variant]} ${className || ''}`}>
+  <slot />
+</span>

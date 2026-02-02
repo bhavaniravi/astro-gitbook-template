@@ -1,0 +1,43 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  title: string;
+  subtitle: string;
+  primaryButtonText: string;
+  primaryButtonHref: string;
+  secondaryButtonText?: string;
+  secondaryButtonHref?: string;
+}
+
+const { 
+  title, 
+  subtitle, 
+  primaryButtonText, 
+  primaryButtonHref, 
+  secondaryButtonText, 
+  secondaryButtonHref 
+} = Astro.props;
+---
+
+<div class="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-700 dark:to-indigo-900 rounded-2xl p-8 md:p-12 text-white shadow-xl mb-16">
+  <h2 class="text-3xl font-bold mb-4">
+    {title}
+  </h2>
+  <p class="text-blue-100 text-lg mb-8 max-w-xl">
+    {subtitle}
+  </p>
+  <div class="flex flex-wrap gap-4">
+    <Button href={primaryButtonHref} external variant="secondary">
+      {primaryButtonText}
+      <svg slot="icon-right" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+      </svg>
+    </Button>
+    {secondaryButtonText && secondaryButtonHref && (
+      <Button href={secondaryButtonHref} variant="outline" class="!border-white/30 !text-white hover:!bg-white/10">
+        {secondaryButtonText}
+      </Button>
+    )}
+  </div>
+</div>

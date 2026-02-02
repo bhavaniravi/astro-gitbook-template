@@ -1,0 +1,76 @@
+---
+// Component for adding copy button to code blocks
+---
+
+<script>
+  function addCopyButtons() {
+    // Find all Astro code blocks (Shiki generated)
+    const preBlocks = document.querySelectorAll('pre.astro-code');
+
+    preBlocks.forEach((pre) => {
+      // Skip if button already exists
+      if (pre.querySelector('.copy-button')) return;
+
+      // Create wrapper if not already wrapped
+      if (!pre.parentElement?.classList.contains('code-block-wrapper')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper relative group';
+        pre.parentNode?.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        // Add language label if data-language exists
+        const language = pre.getAttribute('data-language');
+        if (language) {
+          const langLabel = document.createElement('div');
+          langLabel.className = 'code-language absolute top-3 left-3 px-2 py-0.5 text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded';
+          langLabel.textContent = language;
+          wrapper.appendChild(langLabel);
+        }
+      }
+
+      // Create copy button
+      const button = document.createElement('button');
+      button.className = 'copy-button absolute top-3 right-3 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-all focus:opacity-100 shadow-sm';
+      button.textContent = 'Copy';
+      button.setAttribute('aria-label', 'Copy code to clipboard');
+
+      // Add click handler
+      button.addEventListener('click', async () => {
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        const text = code.textContent || '';
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = 'Copied!';
+          button.classList.add('text-green-600', 'dark:text-green-400');
+
+          setTimeout(() => {
+            button.textContent = 'Copy';
+            button.classList.remove('text-green-600', 'dark:text-green-400');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          button.textContent = 'Failed';
+
+          setTimeout(() => {
+            button.textContent = 'Copy';
+          }, 2000);
+        }
+      });
+
+      // Insert button into the wrapper
+      const wrapper = pre.parentElement;
+      if (wrapper?.classList.contains('code-block-wrapper')) {
+        wrapper.appendChild(button);
+      }
+    });
+  }
+
+  // Run on initial load
+  addCopyButtons();
+
+  // Run after Astro page transitions
+  document.addEventListener('astro:after-swap', addCopyButtons);
+</script>

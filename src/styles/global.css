@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .content-max-width {
+    max-width: 65ch;
+  }
+}
+
+/* Essential code block styling */
+@layer components {
+  .astro-code {
+    padding: 2.5rem 1rem 1rem 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    border: 1px solid #d0d7de;
+    background-color: #f6f8fa !important;
+  }
+
+  /* Dark mode - use Shiki's CSS variables */
+  .dark .astro-code,
+  .dark .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  .dark .astro-code {
+    border-color: #30363d;
+  }
+
+  /* Code block wrapper for copy button */
+  .code-block-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+  }
+
+  .code-block-wrapper .astro-code {
+    margin: 0;
+  }
+}
