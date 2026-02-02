@@ -8,6 +8,9 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  googleAnalyticsId?: string;
+  googleAdsenseClient?: string;
+  productionHostname?: string;
   // Navigation Data
   navData: {
     sections: any[];
@@ -17,10 +20,17 @@ interface Props {
   }
 }
 
-const { title, description, image, navData } = Astro.props;
+const { title, description, image, googleAnalyticsId, googleAdsenseClient, productionHostname, navData } = Astro.props;
 ---
 
-<Base title={title} description={description} image={image}>
+<Base
+  title={title}
+  description={description}
+  image={image}
+  googleAnalyticsId={googleAnalyticsId}
+  googleAdsenseClient={googleAdsenseClient}
+  productionHostname={productionHostname}
+>
   <!-- Top Navigation -->
   <TopNav />
 

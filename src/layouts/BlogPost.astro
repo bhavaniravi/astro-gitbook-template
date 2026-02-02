@@ -16,19 +16,31 @@ interface Props {
   navData: any;
   prev?: PostLink;
   next?: PostLink;
+  googleAnalyticsId?: string;
+  googleAdsenseClient?: string;
+  productionHostname?: string;
+  siteName?: string; // For meta description fallback
 }
 
-const { post, navData, prev, next } = Astro.props;
+const { post, navData, prev, next, googleAnalyticsId, googleAdsenseClient, productionHostname, siteName } = Astro.props;
 const { title, pubDate, description, sub_title, featuredImgPath } = post.data;
 
 // Extract category from post ID
 const category = post.id.split('/')[0];
 
 // Use sub_title as fallback description
-const metaDescription = description || sub_title || `Read ${title} on Bhavani Ravi's blog`;
+const metaDescription = description || sub_title || (siteName ? `Read ${title} on ${siteName}` : `Read ${title}`);
 ---
 
-<MainLayout title={title} description={metaDescription} image={featuredImgPath || undefined} navData={navData}>
+<MainLayout
+  title={title}
+  description={metaDescription}
+  image={featuredImgPath || undefined}
+  navData={navData}
+  googleAnalyticsId={googleAnalyticsId}
+  googleAdsenseClient={googleAdsenseClient}
+  productionHostname={productionHostname}
+>
   <article class="max-w-4xl mx-auto px-6 lg:px-8 py-8 lg:py-12">
     <Breadcrumbs category={category} title={title} />
 
