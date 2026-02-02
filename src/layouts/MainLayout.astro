@@ -33,7 +33,7 @@ const { title, description, image, navData } = Astro.props;
   </div>
 
   <!-- Main Content Area -->
-  <main class="md:ml-72 min-h-screen pt-16">
+  <main class="min-h-screen pt-16 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]">
     <slot />
   </main>
 </Base>
