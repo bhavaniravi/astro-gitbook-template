@@ -3,6 +3,7 @@ import MainLayout from './MainLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
 import CodeCopyButton from '../components/CodeCopyButton.astro';
+import ImageViewer from '../components/ImageViewer.astro';
 import PrevNextNav from '../components/PrevNextNav.astro';
 import type { CollectionEntry } from 'astro:content';
 
@@ -54,4 +55,5 @@ const metaDescription = description || sub_title || (siteName ? `Read ${title} o
   <PrevNextNav prev={prev} next={next} />
 
   <CodeCopyButton />
+  <ImageViewer />
 </MainLayout>

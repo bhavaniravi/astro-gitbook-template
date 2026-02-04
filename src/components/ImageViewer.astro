@@ -1,0 +1,159 @@
+---
+// Component for adding full-screen viewer to images and Mermaid diagrams
+---
+
+<script>
+  function initImageViewer() {
+    // Find all images in prose content and Mermaid diagrams
+    const images = document.querySelectorAll('.prose img');
+    const mermaidDiagrams = document.querySelectorAll('pre.mermaid');
+    const allElements = [...images, ...mermaidDiagrams];
+
+    allElements.forEach((element) => {
+      // Skip if already wrapped
+      if (element.parentElement?.classList.contains('image-viewer-wrapper')) return;
+
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'image-viewer-wrapper relative group inline-block w-full';
+      element.parentNode?.insertBefore(wrapper, element);
+      wrapper.appendChild(element);
+
+      // Create expand button (positioned like copy button)
+      const expandButton = document.createElement('button');
+      expandButton.className = 'expand-button absolute top-3 right-3 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-all focus:opacity-100 shadow-sm';
+      expandButton.setAttribute('aria-label', 'Expand to full screen');
+      expandButton.innerHTML = `
+        <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+        </svg>
+      `;
+      wrapper.appendChild(expandButton);
+
+      // Add click handler to open modal
+      const openModal = () => {
+        createAndShowModal(element);
+      };
+
+      expandButton.addEventListener('click', openModal);
+      element.addEventListener('click', openModal);
+      // Make element cursor pointer
+      element.style.cursor = 'pointer';
+    });
+  }
+
+  function createAndShowModal(sourceElement: Element) {
+    // Store reference to trigger element for focus restoration
+    const triggerElement = sourceElement as HTMLElement;
+
+    // Create modal backdrop
+    const modal = document.createElement('div');
+    modal.className = 'image-viewer-modal fixed inset-0 z-50 flex items-center justify-center opacity-0 transition-opacity duration-300';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+
+    // Backdrop with blur
+    const backdrop = document.createElement('div');
+    backdrop.className = 'absolute inset-0 backdrop-blur-md bg-black/60 dark:bg-black/80';
+    modal.appendChild(backdrop);
+
+    // Content container
+    const contentContainer = document.createElement('div');
+    contentContainer.className = 'relative z-10 w-screen h-screen flex items-center justify-center';
+    modal.appendChild(contentContainer);
+
+    // Close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'absolute top-4 right-4 p-2 rounded-lg text-white hover:bg-white/20 transition-colors z-20';
+    closeButton.setAttribute('aria-label', 'Close full-screen view');
+    closeButton.innerHTML = `
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    `;
+    contentContainer.appendChild(closeButton);
+
+    // Create inner container for content with defined size
+    const innerContainer = document.createElement('div');
+    innerContainer.className = 'flex items-center justify-center';
+    innerContainer.style.width = '90vw';
+    innerContainer.style.height = '90vh';
+    innerContainer.style.maxWidth = '90vw';
+    innerContainer.style.maxHeight = '90vh';
+
+    // Clone content
+    const clonedContent = sourceElement.cloneNode(true) as HTMLElement;
+    clonedContent.style.cursor = 'default';
+    clonedContent.style.width = '100%';
+    clonedContent.style.height = '100%';
+    clonedContent.style.objectFit = 'contain';
+
+    // For Mermaid diagrams, ensure SVG scales to fit container
+    if (sourceElement.tagName === 'PRE' && sourceElement.classList.contains('mermaid')) {
+      const svg = clonedContent.querySelector('svg');
+      if (svg) {
+        svg.style.maxWidth = '100%';
+        svg.style.maxHeight = '100%';
+        svg.style.width = 'auto';
+        svg.style.height = 'auto';
+      }
+    }
+
+    innerContainer.appendChild(clonedContent);
+    contentContainer.appendChild(innerContainer);
+
+    // Add to DOM
+    document.body.appendChild(modal);
+
+    // Lock body scroll
+    document.body.style.overflow = 'hidden';
+
+    // Trigger fade-in animation
+    requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      modal.classList.add('opacity-100');
+    });
+
+    // Focus close button
+    closeButton.focus();
+
+    // Close handlers
+    const closeModal = () => {
+      // Fade out
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+
+      // Remove after transition
+      setTimeout(() => {
+        modal.remove();
+        document.body.style.overflow = '';
+        triggerElement.focus();
+      }, 300);
+
+      // Remove event listeners
+      document.removeEventListener('keydown', handleEscape);
+    };
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    };
+
+    // Event listeners
+    closeButton.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', handleEscape);
+
+    // Prevent closing when clicking on content
+    clonedContent.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  // Run on initial load
+  initImageViewer();
+
+  // Run after Astro page transitions
+  document.addEventListener('astro:after-swap', initImageViewer);
+</script>

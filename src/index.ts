@@ -22,3 +22,4 @@ export { default as CTA } from './components/CTA.astro';
 export { default as VideoEmbed } from './components/VideoEmbed.astro';
 export { default as SearchResults } from './components/SearchResults.astro';
 export { default as CodeCopyButton } from './components/CodeCopyButton.astro';
+export { default as ImageViewer } from './components/ImageViewer.astro';
