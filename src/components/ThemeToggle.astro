@@ -29,11 +29,13 @@
       return 'light';
     })();
 
-    // Ensure class is correct on component load (double check)
+    // Ensure class and data-theme are correct on component load (double check)
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
 
     const handleToggleClick = () => {
@@ -41,7 +43,9 @@
       element.classList.toggle('dark');
 
       const isDark = element.classList.contains('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      const themeValue = isDark ? 'dark' : 'light';
+      element.setAttribute('data-theme', themeValue);
+      localStorage.setItem('theme', themeValue);
     };
 
     const toggleBtn = document.getElementById('theme-toggle');
