@@ -1,8 +1,8 @@
 ---
-import Base from './Base.astro';
-import TopNav from '../components/TopNav.astro';
-import Sidebar from '../components/Sidebar.astro';
-import MobileNav from '../components/MobileNav.astro';
+import Base from "./Base.astro";
+import TopNav from "../components/TopNav.astro";
+import Sidebar from "../components/Sidebar.astro";
+import MobileNav from "../components/MobileNav.astro";
 
 interface Props {
   title: string;
@@ -17,10 +17,27 @@ interface Props {
     // Backwards compatibility
     categoryTree?: any;
     sortedCategories?: string[];
-  }
+  };
+  video?: {
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    uploadDate: string;
+    embedUrl: string;
+    duration?: string;
+  };
 }
 
-const { title, description, image, googleAnalyticsId, googleAdsenseClient, productionHostname, navData } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  googleAnalyticsId,
+  googleAdsenseClient,
+  productionHostname,
+  navData,
+  video,
+} = Astro.props;
 ---
 
 <Base
@@ -30,6 +47,7 @@ const { title, description, image, googleAnalyticsId, googleAdsenseClient, produ
   googleAnalyticsId={googleAnalyticsId}
   googleAdsenseClient={googleAdsenseClient}
   productionHostname={productionHostname}
+  video={video}
 >
   <!-- Top Navigation -->
   <TopNav />
@@ -43,7 +61,9 @@ const { title, description, image, googleAnalyticsId, googleAdsenseClient, produ
   </div>
 
   <!-- Main Content Area -->
-  <main class="min-h-screen pt-16 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]">
+  <main
+    class="min-h-screen pt-16 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]"
+  >
     <slot />
   </main>
 </Base>

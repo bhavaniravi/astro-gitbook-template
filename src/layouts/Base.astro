@@ -9,6 +9,14 @@ interface Props {
   googleAnalyticsId?: string;
   googleAdsenseClient?: string;
   productionHostname?: string; // Only enable analytics on this hostname
+  video?: {
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    uploadDate: string;
+    embedUrl: string;
+    duration?: string;
+  };
 }
 
 const {
@@ -17,7 +25,8 @@ const {
   image,
   googleAnalyticsId,
   googleAdsenseClient,
-  productionHostname
+  productionHostname,
+  video
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -44,14 +53,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:image" content={new URL(image || '', Astro.site)} />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(image, Astro.site)} />
+    <meta property="twitter:image" content={new URL(image || '', Astro.site)} />
+
+    {video && (
+      <>
+        <meta property="og:video" content={video.embedUrl} />
+        <meta property="og:video:secure_url" content={video.embedUrl} />
+        <meta property="og:video:type" content="text/html" />
+        <meta property="og:video:width" content="1280" />
+        <meta property="og:video:height" content="720" />
+        
+        <script type="application/ld+json" is:inline set:html={JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "VideoObject",
+          "name": video.title,
+          "description": video.description,
+          "thumbnailUrl": [video.thumbnailUrl],
+          "uploadDate": video.uploadDate,
+          "embedUrl": video.embedUrl,
+          ...(video.duration ? { "duration": video.duration } : {})
+        })} />
+      </>
+    )}
+
     <ClientRouter />
 
     {googleAnalyticsId && (
