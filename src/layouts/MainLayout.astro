@@ -26,6 +26,7 @@ interface Props {
     embedUrl: string;
     duration?: string;
   };
+  schema?: any;
 }
 
 const {
@@ -37,6 +38,7 @@ const {
   productionHostname,
   navData,
   video,
+  schema,
 } = Astro.props;
 ---
 
@@ -48,6 +50,7 @@ const {
   googleAdsenseClient={googleAdsenseClient}
   productionHostname={productionHostname}
   video={video}
+  schema={schema}
 >
   <!-- Top Navigation -->
   <TopNav />
