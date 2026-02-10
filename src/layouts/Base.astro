@@ -9,6 +9,7 @@ interface Props {
   googleAnalyticsId?: string;
   googleAdsenseClient?: string;
   productionHostname?: string; // Only enable analytics on this hostname
+  schema?: any;
   video?: {
     title: string;
     description: string;
@@ -26,7 +27,8 @@ const {
   googleAnalyticsId,
   googleAdsenseClient,
   productionHostname,
-  video
+  video,
+  schema
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -81,6 +83,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           ...(video.duration ? { "duration": video.duration } : {})
         })} />
       </>
+    )}
+
+    {schema && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
     )}
 
     <ClientRouter />
