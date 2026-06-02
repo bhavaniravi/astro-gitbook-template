@@ -1,0 +1,37 @@
+---
+interface Props {
+  message: string;
+  url: string;
+  linkText?: string;
+}
+const { message, url, linkText = "Register Now" } = Astro.props;
+---
+
+<div id="announcement-banner" class="w-full bg-indigo-600 dark:bg-indigo-800 text-white px-4 py-2.5 text-sm text-center relative">
+  <span>{message}</span>
+  <a href={url} target="_blank" rel="noopener" class="ml-2 underline font-semibold hover:text-indigo-200 transition-colors">{linkText} →</a>
+  <button id="dismiss-banner" aria-label="Dismiss" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg leading-none">×</button>
+</div>
+
+<script>
+  const STORAGE_KEY = 'announcement-banner-dismissed-bo37f781';
+
+  function initBanner() {
+    const banner = document.getElementById('announcement-banner');
+    if (!banner) return;
+
+    if (localStorage.getItem(STORAGE_KEY)) {
+      banner.remove();
+      return;
+    }
+
+    const btn = document.getElementById('dismiss-banner');
+    btn?.addEventListener('click', () => {
+      localStorage.setItem(STORAGE_KEY, '1');
+      banner.remove();
+    });
+  }
+
+  initBanner();
+  document.addEventListener('astro:after-swap', initBanner);
+</script>

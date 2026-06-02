@@ -2,6 +2,7 @@ export { default as Base } from './layouts/Base.astro';
 export { default as BlogPost } from './layouts/BlogPost.astro';
 export { default as MainLayout } from './layouts/MainLayout.astro';
 
+export { default as AnnouncementBanner } from './components/AnnouncementBanner.astro';
 export { default as Breadcrumbs } from './components/Breadcrumbs.astro';
 export { default as ContentCard } from './components/ContentCard.astro';
 export { default as MobileNav } from './components/MobileNav.astro';
