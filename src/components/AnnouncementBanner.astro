@@ -29,6 +29,12 @@ const { message, url, linkText = "Register Now" } = Astro.props;
     btn?.addEventListener('click', () => {
       localStorage.setItem(STORAGE_KEY, '1');
       banner.remove();
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'announcement_banner_dismissed', {
+          event_category: 'engagement',
+          event_label: window.location.pathname,
+        });
+      }
     });
   }
 
