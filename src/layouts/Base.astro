@@ -95,14 +95,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       <>
         <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
         <script is:inline define:vars={{ googleAnalyticsId, productionHostname }}>
-          var host = window.location.hostname;
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function(){ window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
 
+          var host = window.location.hostname;
           if(!productionHostname || host == productionHostname) {
             console.log(`enabling google analytics for ${host}`);
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', googleAnalyticsId);
+            window.gtag('config', googleAnalyticsId);
           }
         </script>
       </>
