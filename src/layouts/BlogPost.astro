@@ -33,7 +33,15 @@ const {
   productionHostname,
   siteName,
 } = Astro.props;
-const { title, pubDate, description, sub_title, featuredImgPath } = post.data;
+const { title, pubDate, description, sub_title, featuredImgPath: rawFeaturedImg } = post.data;
+const _resolvedImg = rawFeaturedImg
+  ? (typeof rawFeaturedImg === 'string' ? rawFeaturedImg : rawFeaturedImg.src)
+  : undefined;
+// /@fs/... = Vite dev-server internal path; ./ or ../ = relative path that can't be a URL
+const featuredImgPath =
+  _resolvedImg && !_resolvedImg.startsWith('/@') && !_resolvedImg.startsWith('.')
+    ? _resolvedImg
+    : undefined;
 
 // Extract category from post ID
 const category = post.id.split("/")[0];
