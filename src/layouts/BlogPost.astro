@@ -22,6 +22,11 @@ interface Props {
   googleAdsenseClient?: string;
   productionHostname?: string;
   siteName?: string; // For meta description fallback
+  descriptionFallback?: string; // Derived from body when frontmatter has no description
+  wordCount?: number;
+  authorNode?: Record<string, any>; // Schema.org author ({ '@id': ... } to link to a Person entity)
+  publisherNode?: Record<string, any>;
+  extraGraph?: Record<string, any>[]; // Extra JSON-LD nodes (Person, WebSite, ...)
   newsletterUrl?: string; // Optional; empty = RSS only
   announcement?: { enabled?: boolean; message?: string; url?: string; linkText?: string; id?: string };
 }
@@ -35,10 +40,15 @@ const {
   googleAdsenseClient,
   productionHostname,
   siteName,
+  descriptionFallback,
+  wordCount,
+  authorNode,
+  publisherNode,
+  extraGraph = [],
   newsletterUrl = "",
   announcement,
 } = Astro.props;
-const { title, pubDate, description, sub_title, featuredImgPath: rawFeaturedImg } = post.data;
+const { title, pubDate, description, sub_title, tags = [], featuredImgPath: rawFeaturedImg } = post.data;
 const _resolvedImg = rawFeaturedImg
   ? (typeof rawFeaturedImg === 'string' ? rawFeaturedImg : rawFeaturedImg.src)
   : undefined;
@@ -61,6 +71,7 @@ const fmt = (c: string) =>
 const metaDescription =
   description ||
   sub_title ||
+  descriptionFallback ||
   (siteName ? `Read ${title} on ${siteName}` : `Read ${title}`);
 
 // Structured Data
@@ -94,24 +105,19 @@ const structuredData = {
         : undefined,
       datePublished: publishedISO,
       dateModified: modifiedISO,
-      author: {
-        "@type": "Person",
-        name: "Bhavani Ravi",
-        url: "https://bhavaniravi.com",
-      },
-      publisher: {
-        "@type": "Organization",
-        name: siteName || "Bhavani Ravi",
-        logo: {
-          "@type": "ImageObject",
-          url: new URL("/favicon/favicon-32x32.png", Astro.site).toString(),
-        },
-      },
+      url: new URL(Astro.url.pathname, Astro.site).toString(),
+      inLanguage: "en",
+      articleSection: fmt(category),
+      keywords: tags.length ? tags.join(", ") : undefined,
+      wordCount: wordCount || undefined,
+      author: authorNode ?? { "@type": "Person", name: "Bhavani Ravi", url: Astro.site?.toString() },
+      publisher: publisherNode ?? authorNode ?? { "@type": "Person", name: siteName || "Bhavani Ravi" },
       mainEntityOfPage: {
         "@type": "WebPage",
         "@id": new URL(Astro.url.pathname, Astro.site).toString(),
       },
     },
+    ...extraGraph,
     {
       "@type": "BreadcrumbList",
       itemListElement: breadcrumbItems.map((item, index) => ({
@@ -135,6 +141,8 @@ const structuredData = {
   productionHostname={productionHostname}
   schema={structuredData}
   ogType="article"
+  tags={tags}
+  author={authorNode?.name || siteName}
   publishedTime={publishedISO}
   modifiedTime={modifiedISO}
   announcement={announcement}

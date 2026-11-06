@@ -32,6 +32,9 @@ interface Props {
   ogType?: 'website' | 'article';
   publishedTime?: string | Date;
   modifiedTime?: string | Date;
+  tags?: string[];
+  author?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -47,6 +50,9 @@ const {
   ogType,
   publishedTime,
   modifiedTime,
+  tags,
+  author,
+  noindex,
   announcement,
 } = Astro.props;
 const showBanner = !!(announcement?.enabled && announcement.message && announcement.url);
@@ -64,6 +70,9 @@ const showBanner = !!(announcement?.enabled && announcement.message && announcem
   ogType={ogType}
   publishedTime={publishedTime}
   modifiedTime={modifiedTime}
+  tags={tags}
+  author={author}
+  noindex={noindex}
 >
   <a
     href="#main-content"
