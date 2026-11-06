@@ -4,6 +4,7 @@ import Breadcrumbs from "../components/Breadcrumbs.astro";
 import PageHeader from "../components/PageHeader.astro";
 import CodeCopyButton from "../components/CodeCopyButton.astro";
 import ImageViewer from "../components/ImageViewer.astro";
+import SubscribeCTA from "../components/SubscribeCTA.astro";
 import PrevNextNav from "../components/PrevNextNav.astro";
 import type { CollectionEntry } from "astro:content";
 
@@ -21,6 +22,8 @@ interface Props {
   googleAdsenseClient?: string;
   productionHostname?: string;
   siteName?: string; // For meta description fallback
+  newsletterUrl?: string; // Optional; empty = RSS only
+  announcement?: { enabled?: boolean; message?: string; url?: string; linkText?: string; id?: string };
 }
 
 const {
@@ -32,6 +35,8 @@ const {
   googleAdsenseClient,
   productionHostname,
   siteName,
+  newsletterUrl = "",
+  announcement,
 } = Astro.props;
 const { title, pubDate, description, sub_title, featuredImgPath: rawFeaturedImg } = post.data;
 const _resolvedImg = rawFeaturedImg
@@ -44,7 +49,13 @@ const featuredImgPath =
     : undefined;
 
 // Extract category from post ID
-const category = post.id.split("/")[0];
+const idParts = post.id.split("/");
+const category = idParts[0];
+// Only a real subcategory folder (category/sub/file.md) has a landing page
+const subcategory = idParts.length > 2 ? idParts[1] : undefined;
+const catLabels: Record<string, string> = { ai: "AI", devops: "DevOps", fastapi: "FastAPI" };
+const fmt = (c: string) =>
+  catLabels[c] ?? c.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
 // Use sub_title as fallback description
 const metaDescription =
@@ -56,9 +67,19 @@ const metaDescription =
 const breadcrumbItems = [
   { name: "Home", item: Astro.site?.toString() || "" },
   { name: "Blog", item: new URL("/blog", Astro.site).toString() },
-  { name: category, item: new URL(`/blog/${category}`, Astro.site).toString() },
+  { name: fmt(category), item: new URL(`/blog/${category}`, Astro.site).toString() },
+  ...(subcategory
+    ? [{ name: fmt(subcategory), item: new URL(`/blog/${category}/${subcategory}`, Astro.site).toString() }]
+    : []),
   { name: title, item: new URL(Astro.url.pathname, Astro.site).toString() },
 ];
+
+const toISO = (d: any) => {
+  const t = new Date(d);
+  return isNaN(t.getTime()) ? undefined : t.toISOString();
+};
+const publishedISO = toISO(pubDate);
+const modifiedISO = toISO((post.data as any).updatedDate || (post.data as any).lastmod || pubDate);
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -71,7 +92,8 @@ const structuredData = {
       image: featuredImgPath
         ? new URL(featuredImgPath, Astro.site).toString()
         : undefined,
-      datePublished: pubDate,
+      datePublished: publishedISO,
+      dateModified: modifiedISO,
       author: {
         "@type": "Person",
         name: "Bhavani Ravi",
@@ -112,9 +134,13 @@ const structuredData = {
   googleAdsenseClient={googleAdsenseClient}
   productionHostname={productionHostname}
   schema={structuredData}
+  ogType="article"
+  publishedTime={publishedISO}
+  modifiedTime={modifiedISO}
+  announcement={announcement}
 >
   <article class="max-w-4xl mx-auto px-6 lg:px-8 py-8 lg:py-12">
-    <Breadcrumbs category={category} title={title} />
+    <Breadcrumbs category={category} subcategory={subcategory} title={title} />
 
     <PageHeader
       title={title}
@@ -125,6 +151,8 @@ const structuredData = {
     <div class="prose prose-lg dark:prose-dark max-w-none">
       <slot />
     </div>
+
+    <SubscribeCTA newsletterUrl={newsletterUrl} />
   </article>
 
   <PrevNextNav prev={prev} next={next} />

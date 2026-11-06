@@ -3,29 +3,42 @@ import ThemeToggle from './ThemeToggle.astro';
 import SearchResults from './SearchResults.astro';
 ---
 
-<nav class="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
+<nav aria-label="Site" class="fixed top-0 left-0 right-0 h-16 bg-ink-50 dark:bg-ink-900 border-b border-gray-200 dark:border-gray-800 z-50">
   <div class="h-full px-6 flex items-center justify-between md:pl-[calc(max(2rem,calc((100vw-1400px)/2))+1.5rem)] md:pr-[max(2rem,calc((100vw-1400px)/2))]">
     <!-- Left: Site Branding -->
     <div class="flex items-center gap-2">
-      <a href="/" class="flex items-center gap-2 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-        <img
-          src="/favicon/apple-touch-icon.png"
-          alt="Site icon"
-          class="w-8 h-8 rounded"
-        />
-        <span class="font-semibold text-base hidden sm:inline">Bhavani's Digital Garden</span>
+      <a
+        href="/"
+        aria-label="Bhavani Ravi, home"
+        class="flex items-center gap-2.5 text-ink-900 dark:text-ink-100 hover:text-honey-700 dark:hover:text-honey-400 transition-colors rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-honey-600 dark:focus-visible:outline-honey-400"
+      >
+        <!-- Bee mark: decorative, the link already carries the accessible name -->
+        <svg class="w-7 h-7 shrink-0" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="bee-body-clip"><ellipse cx="18" cy="20" rx="10.5" ry="7.5" /></clipPath>
+          </defs>
+          <ellipse cx="14" cy="10" rx="3.6" ry="6.2" transform="rotate(-28 14 10)" class="fill-honey-100 stroke-ink-900 dark:fill-ink-100 dark:stroke-ink-300" stroke-width="1.5" />
+          <ellipse cx="21" cy="9.5" rx="3.6" ry="6.2" transform="rotate(22 21 9.5)" class="fill-honey-100 stroke-ink-900 dark:fill-ink-100 dark:stroke-ink-300" stroke-width="1.5" />
+          <g clip-path="url(#bee-body-clip)">
+            <rect x="6" y="10" width="26" height="20" class="fill-honey-500" />
+            <rect x="15" y="10" width="3.2" height="20" class="fill-ink-900" />
+            <rect x="21.2" y="10" width="3.2" height="20" class="fill-ink-900" />
+          </g>
+          <ellipse cx="18" cy="20" rx="10.5" ry="7.5" fill="none" class="stroke-ink-900 dark:stroke-ink-900" stroke-width="1.5" />
+          <circle cx="7.5" cy="20.5" r="4.2" class="fill-ink-900 stroke-ink-900 dark:fill-ink-100 dark:stroke-ink-900" stroke-width="1.5" />
+          <circle cx="6.3" cy="19.5" r="0.9" class="fill-honey-100 dark:fill-ink-900" />
+        </svg>
+        <span class="font-serif font-semibold text-lg tracking-tight hidden sm:inline" aria-hidden="true">Bhavani Ravi</span>
       </a>
     </div>
 
     <!-- Right: Quick Links and Search -->
     <div class="flex items-center gap-4">
       <a
-        href="https://flowexperts.ai/"
-        target="_blank"
-        rel="noopener"
-        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors hidden lg:inline"
+        href="/work-with-me"
+        class="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors whitespace-nowrap"
       >
-        Work With Me
+        Work with me
       </a>
 
       <!-- <a
@@ -51,8 +64,9 @@ import SearchResults from './SearchResults.astro';
         <input
           type="search"
           placeholder="Ask or search..."
-          class="w-64 px-4 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          class="w-64 px-4 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-honey-600 dark:focus:ring-honey-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
           id="search-input"
+          aria-label="Search the site"
           autocomplete="off"
         />
         <svg
@@ -66,6 +80,19 @@ import SearchResults from './SearchResults.astro';
         <SearchResults />
       </div>
 
+      <!-- Mobile search button (opens the menu with the search field focused) -->
+      <button
+        id="mobile-search-toggle"
+        type="button"
+        class="md:hidden inline-flex items-center justify-center min-w-10 min-h-10 -mr-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-honey-600 dark:focus-visible:outline-honey-400"
+        aria-label="Search"
+        aria-controls="mobile-nav"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </button>
+
       <!-- Theme Toggle -->
       <ThemeToggle />
 
@@ -73,8 +100,10 @@ import SearchResults from './SearchResults.astro';
       <button
         id="mobile-menu-toggle"
         type="button"
-        class="md:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 rounded-lg transition-colors"
-        aria-label="Toggle menu"
+        class="md:hidden inline-flex items-center justify-center min-w-10 min-h-10 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-honey-600 dark:focus-visible:outline-honey-400"
+        aria-label="Menu"
+        aria-controls="mobile-nav"
+        aria-expanded="false"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -86,16 +115,33 @@ import SearchResults from './SearchResults.astro';
 
 <script>
   // Mobile menu toggle
-  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-  const mobileNav = document.getElementById('mobile-nav');
-
-  if (mobileMenuToggle && mobileNav) {
-    mobileMenuToggle.addEventListener('click', () => {
-      mobileNav.classList.toggle('hidden');
-    });
+  function setMenuOpen(open: boolean) {
+    const mobileNav = document.getElementById('mobile-nav');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    if (!mobileNav) return;
+    mobileNav.classList.toggle('hidden', !open);
+    toggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
-  // Search functionality
+  function initMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (toggle && mobileNav && !toggle.dataset.init) {
+      toggle.dataset.init = 'true';
+      toggle.addEventListener('click', () => setMenuOpen(mobileNav.classList.contains('hidden')));
+    }
+    // Mobile search button: open the menu and focus the search field
+    const searchBtn = document.getElementById('mobile-search-toggle');
+    if (searchBtn && !searchBtn.dataset.init) {
+      searchBtn.dataset.init = 'true';
+      searchBtn.addEventListener('click', () => {
+        setMenuOpen(true);
+        (document.getElementById('mobile-search-input') as HTMLInputElement | null)?.focus();
+      });
+    }
+  }
+
+  // Search functionality (shared by desktop header input and mobile menu input)
   interface SearchItem {
     title: string;
     description: string;
@@ -108,11 +154,6 @@ import SearchResults from './SearchResults.astro';
   let searchIndex: SearchItem[] = [];
   let searchIndexLoaded = false;
 
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const searchResults = document.getElementById('search-results');
-  const searchResultsContent = document.getElementById('search-results-content');
-
-  // Load search index
   async function loadSearchIndex() {
     if (searchIndexLoaded) return;
     try {
@@ -124,7 +165,6 @@ import SearchResults from './SearchResults.astro';
     }
   }
 
-  // Perform search
   function performSearch(query: string): SearchItem[] {
     if (!query.trim() || !searchIndexLoaded) return [];
 
@@ -141,88 +181,72 @@ import SearchResults from './SearchResults.astro';
     return results.slice(0, 10); // Limit to 10 results
   }
 
-  // Display search results
-  function displayResults(results: SearchItem[]) {
-    if (!searchResultsContent || !searchResults) return;
+  const escapeHtml = (s: string) =>
+    s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
 
+  function renderResults(results: SearchItem[], container: HTMLElement, wrapper: HTMLElement) {
     if (results.length === 0) {
-      searchResultsContent.innerHTML = '<div class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">No results found</div>';
-      searchResults.classList.remove('hidden');
+      container.innerHTML = '<div class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">No results found</div>';
+      wrapper.classList.remove('hidden');
       return;
     }
 
     const typeColors: Record<string, string> = {
-      blog: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      talk: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      service: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      project: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+      blog: 'bg-honey-100 text-honey-900 dark:bg-honey-900/30 dark:text-honey-200',
+      talk: 'bg-ink-200 text-ink-800 dark:bg-ink-700 dark:text-ink-200',
+      service: 'bg-honey-100 text-honey-900 dark:bg-honey-900/30 dark:text-honey-200',
+      project: 'bg-ink-200 text-ink-800 dark:bg-ink-700 dark:text-ink-200'
     };
 
-    const html = results.map(item => `
+    container.innerHTML = results.map(item => `
       <a href="${item.url}" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
         <div class="flex items-start gap-2">
           <span class="inline-block px-2 py-0.5 text-xs rounded ${typeColors[item.type] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}">${item.type}</span>
           <div class="flex-1 min-w-0">
-            <div class="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">${item.title}</div>
-            ${item.description ? `<div class="text-xs text-gray-600 dark:text-gray-400 truncate">${item.description}</div>` : ''}
+            <div class="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">${escapeHtml(item.title)}</div>
+            ${item.description ? `<div class="text-xs text-gray-600 dark:text-gray-400 truncate">${escapeHtml(item.description)}</div>` : ''}
           </div>
         </div>
       </a>
     `).join('');
-
-    searchResultsContent.innerHTML = html;
-    searchResults.classList.remove('hidden');
+    wrapper.classList.remove('hidden');
   }
 
-  // Hide results
-  function hideResults() {
-    if (searchResults) {
-      searchResults.classList.add('hidden');
-    }
-  }
+  function bindSearch(inputId: string, resultsId: string, contentId: string) {
+    const input = document.getElementById(inputId) as HTMLInputElement | null;
+    const wrapper = document.getElementById(resultsId);
+    const content = document.getElementById(contentId);
+    if (!input || !wrapper || !content || input.dataset.searchInit) return;
+    input.dataset.searchInit = 'true';
 
-  if (searchInput) {
-    // Load index on focus
-    searchInput.addEventListener('focus', () => {
-      loadSearchIndex();
-    });
-
-    // Search on input
-    searchInput.addEventListener('input', (e) => {
-      const query = (e.target as HTMLInputElement).value;
+    const run = async () => {
+      const query = input.value;
       if (!query.trim()) {
-        hideResults();
+        wrapper.classList.add('hidden');
         return;
       }
-      const results = performSearch(query);
-      displayResults(results);
-    });
+      await loadSearchIndex();
+      // Ignore stale results if the query changed while the index loaded
+      if (input.value !== query) return;
+      renderResults(performSearch(query), content, wrapper);
+    };
 
-    // Hide results when clicking outside
+    input.addEventListener('focus', loadSearchIndex);
+    input.addEventListener('input', run);
     document.addEventListener('click', (e) => {
-      if (!searchInput.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
-        hideResults();
+      if (!input.contains(e.target as Node) && !wrapper.contains(e.target as Node)) {
+        wrapper.classList.add('hidden');
       }
     });
   }
 
-  // Re-initialize on page navigation (Astro view transitions)
-  document.addEventListener('astro:after-swap', () => {
-    const newSearchInput = document.getElementById('search-input') as HTMLInputElement;
-    const newSearchResults = document.getElementById('search-results');
+  function initAll() {
+    initMobileMenu();
+    bindSearch('search-input', 'search-results', 'search-results-content');
+    bindSearch('mobile-search-input', 'mobile-search-results', 'mobile-search-results-content');
+  }
 
-    if (newSearchInput) {
-      // Reattach event listeners
-      newSearchInput.addEventListener('focus', loadSearchIndex);
-      newSearchInput.addEventListener('input', (e) => {
-        const query = (e.target as HTMLInputElement).value;
-        if (!query.trim()) {
-          hideResults();
-          return;
-        }
-        const results = performSearch(query);
-        displayResults(results);
-      });
-    }
-  });
+  initAll();
+  // Re-initialize on page navigation (Astro view transitions)
+  document.addEventListener('astro:after-swap', initAll);
 </script>

@@ -3,22 +3,24 @@ interface Props {
   message: string;
   url: string;
   linkText?: string;
+  id?: string;
 }
-const { message, url, linkText = "Register Now" } = Astro.props;
+const { message, url, linkText = "Register Now", id = "default" } = Astro.props;
 ---
 
-<div id="announcement-banner" class="sticky top-16 z-40 w-full bg-indigo-600 dark:bg-indigo-800 text-white px-4 py-2.5 text-sm text-center relative">
-  <span>{message}</span>
-  <a href={url} target="_blank" rel="noopener" class="ml-2 underline font-semibold hover:text-indigo-200 transition-colors">{linkText} →</a>
-  <button id="dismiss-banner" aria-label="Dismiss" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg leading-none">×</button>
+<div id="announcement-banner" data-banner-id={id} class="sticky top-16 z-40 w-full bg-honey-800 dark:bg-honey-900 text-honey-50 text-sm" role="region" aria-label="Announcement">
+  <div class="relative px-12 py-2.5 text-center">
+    <span>{message}</span>
+    <a href={url} target="_blank" rel="noopener" class="ml-2 underline font-semibold hover:text-honey-200 transition-colors">{linkText} →</a>
+    <button id="dismiss-banner" type="button" aria-label="Dismiss announcement" class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center min-w-10 min-h-10 text-honey-50/80 hover:text-white transition-colors text-xl leading-none rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-honey-50">×</button>
+  </div>
 </div>
 
 <script>
-  const STORAGE_KEY = 'announcement-banner-dismissed-bo37f781';
-
   function initBanner() {
     const banner = document.getElementById('announcement-banner');
     if (!banner) return;
+    const STORAGE_KEY = 'announcement-banner-dismissed-' + (banner.dataset.bannerId || 'default');
 
     if (localStorage.getItem(STORAGE_KEY)) {
       banner.remove();

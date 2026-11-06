@@ -4,9 +4,10 @@ interface Props {
   href?: string;
   items?: any[];
   level?: number;
+  idPrefix?: string;
 }
 
-const { title, href, items, level = 0 } = Astro.props;
+const { title, href, items, level = 0, idPrefix = "nav" } = Astro.props;
 const hasChildren = items && items.length > 0;
 
 const normalize = (path: string) => path?.replace(/\/$/, "") || "";
@@ -25,43 +26,62 @@ const isExpanded = hasChildren && items.some(isItemActive);
 
 // Check if this specific item is active
 const isActive = href && normalize(href) === currentPath;
+const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const contentId = `${idPrefix}-${level}-${slugify(title)}-${slugify(href || "")}`;
 ---
 
 <div class="nav-item-wrapper" data-nav-level={level}>
   {hasChildren ? (
     <div class="nav-collapsible">
-      <button
-        type="button"
+      <div
         class:list={[
-          "nav-toggle w-full flex items-center justify-between px-2 py-1.5 text-sm font-medium rounded-md transition-colors",
+          "flex items-center justify-between rounded-md transition-colors",
           isActive
-            ? "bg-blue-100 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100"
+            ? "bg-honey-100 dark:bg-honey-900/30 text-honey-900 dark:text-honey-100"
             : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
         ]}
-        aria-expanded={isExpanded ? "true" : "false"}
       >
-        <span class="truncate">
-          {href ? (
-            <a href={href} class={isActive ? "" : "hover:underline"} onclick="event.stopPropagation()">
-              {title}
-            </a>
-          ) : (
-            title
-          )}
-        </span>
-        <svg
-          class="chevron w-4 h-4 transition-transform"
-          class:list={[isExpanded ? 'rotate-90' : '']}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        {href ? (
+          <a
+            href={href}
+            aria-current={isActive ? "page" : undefined}
+            data-active-link={isActive}
+            class:list={["flex-1 min-w-0 truncate px-2 py-1.5 text-sm font-medium rounded-md", isActive ? "" : "hover:underline"]}
+          >
+            {title}
+          </a>
+        ) : (
+          <button
+            type="button"
+            class="nav-toggle flex-1 min-w-0 truncate text-left px-2 py-1.5 text-sm font-medium rounded-md"
+            aria-expanded={isExpanded ? "true" : "false"}
+            aria-controls={contentId}
+          >
+            {title}
+          </button>
+        )}
+        <button
+          type="button"
+          class="nav-toggle shrink-0 px-2 py-1.5 rounded-md"
+          aria-label={`Toggle ${title} section`}
+          aria-expanded={isExpanded ? "true" : "false"}
+          aria-controls={contentId}
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-        </svg>
-      </button>
-      <div class="nav-content pl-3 space-y-0.5" class:list={[isExpanded ? '' : 'hidden']}>
+          <svg
+            class="chevron w-4 h-4 transition-transform"
+            class:list={[isExpanded ? 'rotate-90' : '']}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+      <div id={contentId} class="nav-content pl-3 space-y-0.5" class:list={[isExpanded ? '' : 'hidden']}>
         {items.map(item => (
-          <Astro.self {...item} level={level + 1} />
+          <Astro.self {...item} level={level + 1} idPrefix={idPrefix} />
         ))}
       </div>
     </div>
@@ -73,11 +93,12 @@ const isActive = href && normalize(href) === currentPath;
       class:list={[
         "text-sm block px-2 py-1.5 rounded-md transition-colors truncate flex items-center justify-between",
         isActive
-          ? "bg-blue-100 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100 font-medium"
+          ? "bg-honey-100 dark:bg-honey-900/30 text-honey-900 dark:text-honey-100 font-medium"
           : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
       ]}
       title={title}
       data-active-link={isActive}
+      aria-current={isActive ? "page" : undefined}
     >
       <span>{title}</span>
       {href?.startsWith('http') && (
@@ -97,22 +118,16 @@ const isActive = href && normalize(href) === currentPath;
       button.setAttribute('data-nav-listener', 'true');
 
       button.addEventListener('click', (e) => {
-        const toggle = e.currentTarget as HTMLButtonElement;
-        const content = toggle.nextElementSibling as HTMLElement;
-        const chevron = toggle.querySelector('.chevron');
-        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-
-        if (content && chevron) {
-          if (isExpanded) {
-            content.classList.add('hidden');
-            chevron.classList.remove('rotate-90');
-            toggle.setAttribute('aria-expanded', 'false');
-          } else {
-            content.classList.remove('hidden');
-            chevron.classList.add('rotate-90');
-            toggle.setAttribute('aria-expanded', 'true');
-          }
-        }
+        const wrapper = (e.currentTarget as HTMLElement).closest('.nav-collapsible');
+        if (!wrapper) return;
+        const content = wrapper.querySelector(':scope > .nav-content') as HTMLElement | null;
+        const chevron = wrapper.querySelector('.chevron');
+        const toggles = wrapper.querySelectorAll(':scope > div > .nav-toggle');
+        if (!content) return;
+        const open = content.classList.contains('hidden');
+        content.classList.toggle('hidden', !open);
+        chevron?.classList.toggle('rotate-90', open);
+        toggles.forEach(t => t.setAttribute('aria-expanded', open ? 'true' : 'false'));
       });
     });
   }

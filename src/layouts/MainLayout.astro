@@ -27,7 +27,11 @@ interface Props {
     embedUrl: string;
     duration?: string;
   };
+  announcement?: { enabled?: boolean; message?: string; url?: string; linkText?: string; id?: string };
   schema?: any;
+  ogType?: 'website' | 'article';
+  publishedTime?: string | Date;
+  modifiedTime?: string | Date;
 }
 
 const {
@@ -40,7 +44,12 @@ const {
   navData,
   video,
   schema,
+  ogType,
+  publishedTime,
+  modifiedTime,
+  announcement,
 } = Astro.props;
+const showBanner = !!(announcement?.enabled && announcement.message && announcement.url);
 ---
 
 <Base
@@ -52,7 +61,17 @@ const {
   productionHostname={productionHostname}
   video={video}
   schema={schema}
+  ogType={ogType}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
 >
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:bg-honey-500 focus:text-ink-900 focus:font-semibold focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-ink-900 dark:focus:outline-honey-100"
+  >
+    Skip to main content
+  </a>
+
   <!-- Top Navigation -->
   <TopNav />
 
@@ -66,13 +85,18 @@ const {
 
   <!-- Main Content Area -->
   <main
-    class="min-h-screen pt-16 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]"
+    id="main-content"
+    tabindex="-1"
+    class="min-h-screen focus:outline-none pt-16 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]"
   >
-    <!-- <AnnouncementBanner
-      message="Upcoming Workshop: Build Production-Grade pipelines with Apache Airflow"
-      url="https://luma.com/bo37f781?utm_source=til&utm_medium=announcement&utm_campaign=airflow_workshop"
-      linkText="Register Now"
-    /> -->
+    {showBanner && (
+      <AnnouncementBanner
+        message={announcement!.message!}
+        url={announcement!.url!}
+        linkText={announcement!.linkText}
+        id={announcement!.id}
+      />
+    )}
     <slot />
   </main>
 </Base>

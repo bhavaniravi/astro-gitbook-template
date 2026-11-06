@@ -20,15 +20,15 @@ const {
 } = Astro.props;
 ---
 
-<div class="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-700 dark:to-indigo-900 rounded-2xl p-8 md:p-12 text-white shadow-xl mb-16">
+<div class="bg-ink-900 dark:bg-ink-800 border border-honey-500/40 rounded-2xl p-8 md:p-12 text-ink-50 mb-16">
   <h2 class="text-3xl font-bold mb-4">
     {title}
   </h2>
-  <p class="text-blue-100 text-lg mb-8 max-w-xl">
+  <p class="text-ink-200 text-lg mb-8 max-w-xl">
     {subtitle}
   </p>
   <div class="flex flex-wrap gap-4">
-    <Button href={primaryButtonHref} external variant="secondary">
+    <Button href={primaryButtonHref} external variant="primary">
       {primaryButtonText}
       <svg slot="icon-right" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
