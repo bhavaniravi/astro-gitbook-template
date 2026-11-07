@@ -1,5 +1,6 @@
 ---
 import NavItem from './NavItem.astro';
+import { socialIcons } from '../utils/socialIcons';
 
 interface Props {
   sections: {
@@ -26,6 +27,15 @@ const { sections } = Astro.props;
             <NavItem {...item} idPrefix="side" />
           ))}
         </div>
+        {section.id === 'start-here' && (
+          <div class="flex items-center gap-1 px-2 pt-1" aria-label="Social links">
+            {socialIcons.map(i => (
+              <a href={i.href} target="_blank" rel="noopener noreferrer" aria-label={i.name} title={i.name} class="p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d={i.d} /></svg>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     ))}
   </nav>

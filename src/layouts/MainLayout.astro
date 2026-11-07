@@ -3,6 +3,7 @@ import Base from "./Base.astro";
 import TopNav from "../components/TopNav.astro";
 import Sidebar from "../components/Sidebar.astro";
 import MobileNav from "../components/MobileNav.astro";
+import MobileSocialBar from "../components/MobileSocialBar.astro";
 import AnnouncementBanner from "../components/AnnouncementBanner.astro";
 
 interface Props {
@@ -96,7 +97,7 @@ const showBanner = !!(announcement?.enabled && announcement.message && announcem
   <main
     id="main-content"
     tabindex="-1"
-    class="min-h-screen focus:outline-none pt-16 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]"
+    class="min-h-screen focus:outline-none pt-16 pb-12 md:pb-0 md:ml-[calc(max(2rem,calc((100vw-1400px)/2))+18rem)] md:mr-[max(2rem,calc((100vw-1400px)/2))]"
   >
     {showBanner && (
       <AnnouncementBanner
@@ -108,4 +109,7 @@ const showBanner = !!(announcement?.enabled && announcement.message && announcem
     )}
     <slot />
   </main>
+
+  <!-- Mobile sticky social bar -->
+  <MobileSocialBar />
 </Base>

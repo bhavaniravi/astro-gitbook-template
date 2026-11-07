@@ -5,6 +5,7 @@ export { default as MainLayout } from './layouts/MainLayout.astro';
 export { default as AnnouncementBanner } from './components/AnnouncementBanner.astro';
 export { default as Breadcrumbs } from './components/Breadcrumbs.astro';
 export { default as ContentCard } from './components/ContentCard.astro';
+export { default as MobileSocialBar } from './components/MobileSocialBar.astro';
 export { default as MobileNav } from './components/MobileNav.astro';
 export { default as NavSection } from './components/NavSection.astro';
 export { default as PageHeader } from './components/PageHeader.astro';

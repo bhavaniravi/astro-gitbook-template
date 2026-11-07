@@ -1,0 +1,14 @@
+---
+import { socialIcons } from '../utils/socialIcons';
+---
+
+<nav
+  aria-label="Social links"
+  class="md:hidden fixed bottom-0 inset-x-0 z-30 h-10 flex items-center justify-center gap-1 bg-ink-50/95 dark:bg-ink-900/95 backdrop-blur border-t border-gray-200 dark:border-gray-800"
+>
+  {socialIcons.map(i => (
+    <a href={i.href} target="_blank" rel="noopener noreferrer" aria-label={i.name} class="p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d={i.d} /></svg>
+    </a>
+  ))}
+</nav>
